@@ -73,7 +73,7 @@ const pushnotifyRoutes = require('./routes/pushnotifyRoutes')
 app.use('/pushnotify', pushnotifyRoutes)
 
 db.sequelize.sync().then(() => {
-    server.listen(process.env.PORT || 5000, () => {
+    app.listen(process.env.PORT || 5000, () => {
         // console.log(`Listening on: http://localhost:${process.env.PORT}`)
         console.log('Server has Started')
     })
