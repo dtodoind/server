@@ -76,4 +76,7 @@ db.sequelize.sync().then(() => {
     server.listen(PORT, () => {
         console.log(`Listening on: http://localhost:${PORT}`)
     })
+    .catch(err => {
+        console.log('there was a connection error')
+    })
 })
