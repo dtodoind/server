@@ -1,0 +1,271 @@
+const express = require("express");
+const router = express.Router();
+const db = require("../models");
+const bcrypt = require("bcrypt");
+const auth = require("../middleware/auth");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const multer = require("multer");
+const nodemailer = require("nodemailer");
+
+// Step 1
+let transporter = nodemailer.createTransport({
+service: "gmail",
+auth: {
+	user: process.env.EMAIL,
+	pass: process.env.PASSWORD,
+},
+});
+
+const storage = multer.diskStorage({
+destination: function (req, file, cb) {
+	cb(null, "./uploads/");
+},
+filename: function (req, file, cb) {
+	cb(null, file.originalname);
+},
+});
+
+const filefilter = (req, file, cb) => {
+//reject files
+if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+	cb(null, true);
+} else {
+	cb(null, false);
+}
+};
+
+const upload = multer({ storage: storage, fileFilter: filefilter });
+
+// All Users Data
+router.get("/all", (req, res) => {
+db.Users.findAll().then((users) => res.send(users));
+});
+
+// Find One User Data
+router.get("/singleuser/:id", (req, res) => {
+db.Users.findOne({
+	where: {
+	Users_id: req.params.id,
+	},
+}).then((users) => res.send(users));
+});
+
+// Update User Status
+router.put("/status", auth, (req, res) => {
+  db.Users.update(
+    {
+      Status: req.body.Status,
+    },
+    {
+      where: {
+        Users_id: req.body.Users_id,
+      },
+    }
+  ).then((re) => res.send("success"));
+});
+
+// Login
+router.post("/login", (req, res) => {
+	db.Users.findAll({
+		where: {
+			Email: req.body.Email,
+		},
+  	}).then((result) => {
+		if (result[0].Status != "Inactive") {
+		res.send({
+			error: "Pending Account. Please Verify Your Email!",
+		});
+		} else if (result.length !== 0) {
+		bcrypt
+			.compare(req.body.Password, result[0].dataValues.Password)
+			.then((auth) => {
+			if (auth) {
+				jwt.sign(
+				{ id: result[0].dataValues.Users_id },
+				process.env.SECRET_JWT,
+				(err, token) => {
+					if (err) throw err;
+					res.json({
+						token,
+						loggedIn: true,
+						result: JSON.stringify(result),
+					});
+				}
+				);
+			} else {
+				res.json({
+				loggedIn: false,
+				error: "Your email or password is incorrect",
+				});
+			}
+			});
+		} else {
+		res.json({
+			loggedIn: false,
+			error: "Your email or password is incorrect",
+		});
+		}
+  	}).catch((err) => 
+		res.json({
+			loggedIn: false,
+			error: "You are Not Registered",
+		})
+	);
+});
+
+router.get("/confirm/:token", (req, res) => {
+  db.Users.findOne({
+    where: {
+      confirmationCode: req.params.token,
+    },
+  })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+
+      res.send(user);
+      user.Status = "Inactive";
+      user.save((err) => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+      });
+    })
+    .catch((e) => console.log("error", e));
+});
+
+// Insert user
+router.post("/new", upload.single("Image"), async (req, res) => {
+	var ad = [req.body.Address.split(/, /g)];
+	var hashedpass = await bcrypt.hash(req.body.Password, 10);
+	const token = jwt.sign({ Email: req.body.Email }, process.env.SECRET_JWT);
+	db.Users.create({
+		Username: req.body.Username,
+		FirstName: req.body.FirstName,
+		LastName: req.body.LastName,
+		Email: req.body.Email,
+		Password: hashedpass,
+		Address: JSON.stringify(ad),
+		Phoneno: req.body.Phoneno,
+		Gender: req.body.Gender,
+		Image: "http://localhost:5000/" + req.file.filename,
+		Status: req.body.Status,
+		confirmationCode: token,
+	})
+	.then((user) => {
+		let mailOptions = {
+			from: process.env.EMAIL,
+			to: req.body.Email,
+			subject: "Please confirm your account",
+			html: `<h1>Email Confirmation</h1>
+					<h2>Hello ${req.body.FirstName} ${req.body.LastName}</h2>
+					<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+					<a href=http://localhost:3000/confirm/${token}> Click here</a>
+				</div>`,
+		};
+
+		transporter.sendMail(mailOptions, function (err, data) {
+			if (err) {
+			console.log("Error Occur: " + err.message);
+			} else {
+			res.send(user);
+			// res.send({
+			// 	message: "User was registered successfully! Please check your email",
+			// });
+			}
+		});
+	})
+	.catch((err) => {
+		if (err.errors[0].path === "users.Email") {
+			err.message = "Email is already registered";
+			res.send(err.message);
+		} else if (err.errors[0].path === "users.Username") {
+			err.message = "Username is already registered";
+			res.send(err.message);
+		}
+	});
+});
+
+// Forget page
+router.post("/resetpass", (req, res) => {
+db.Users.findOne({
+	where: {
+	email: req.body.email,
+	},
+}).then((user) => {
+	if (user === "") {
+	res.send(user);
+	} else {
+	// Step 2
+	let mailOptions = {
+		from: process.env.EMAIL,
+		to: req.body.email,
+		subject: "Reset Password",
+		html:
+		'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
+	};
+
+	// Step 3
+	transporter.sendMail(mailOptions, function (err, data) {
+		if (err) {
+		console.log("Error Occur: " + err.message);
+		} else {
+		res.send(user);
+		}
+	});
+	}
+});
+});
+
+// Reset Page
+router.put("/passwordreset", async (req, res) => {
+var hashedpass = await bcrypt.hash(req.body.Password, 10);
+db.Users.findOne({
+	where: {
+	email: req.body.email,
+	},
+}).then((use) => {
+	bcrypt.compare(req.body.Password, use.Password).then((match) => {
+	if (match) {
+		res.send("Enter New Password not Old Password");
+	} else {
+		db.Users.update(
+		{
+			Password: hashedpass,
+		},
+		{
+			where: {
+			email: req.body.email,
+			},
+		}
+		).then((user) => res.send("success"));
+	}
+	});
+});
+});
+
+// Update User Details
+router.put("/detailsupdate", auth, upload.single("Image"),(req, res) => {
+	db.Users.update(
+		{
+			Address: req.body.Address,
+			Email: req.body.Email,
+			FirstName: req.body.FirstName,
+			Gender: req.body.Gender,
+			Image: req.file === undefined ? req.body.Image : "http://localhost:5000/" + req.file.filename,
+			LastName: req.body.LastName,
+			Phoneno: req.body.Phoneno,
+			Username: req.body.Username,
+		},
+		{
+			where: {
+				Users_id: req.body.Users_id,
+			},
+		}
+	).then((re) => res.send("success"));
+});
+
+module.exports = router;
