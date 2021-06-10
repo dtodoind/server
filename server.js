@@ -20,7 +20,7 @@ io.on('connection', socket => {
     })
 })
 
-const PORT = process.env.PORT || 5000
+// const PORT = process.env.PORT || 5000
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -73,8 +73,9 @@ const pushnotifyRoutes = require('./routes/pushnotifyRoutes')
 app.use('/pushnotify', pushnotifyRoutes)
 
 db.sequelize.sync().then(() => {
-    server.listen(PORT, () => {
-        console.log(`Listening on: http://localhost:${PORT}`)
+    server.listen(process.env.PORT || 5000, () => {
+        // console.log(`Listening on: http://localhost:${process.env.PORT}`)
+        console.log('Server has Started')
     })
 })
 .catch(err => {
