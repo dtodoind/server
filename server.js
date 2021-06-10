@@ -80,4 +80,5 @@ db.sequelize.sync().then(() => {
 })
 .catch(err => {
     console.log('there was a connection error')
+    console.log(err)
 })
