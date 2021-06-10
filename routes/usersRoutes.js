@@ -151,7 +151,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		Address: JSON.stringify(ad),
 		Phoneno: req.body.Phoneno,
 		Gender: req.body.Gender,
-		Image: "http://localhost:5000/" + req.file.filename,
+		Image: "https://dtodo-indumentaria-server.herokuapp.com/" + req.file.filename,
 		Status: req.body.Status,
 		confirmationCode: token,
 	})
@@ -255,7 +255,7 @@ router.put("/detailsupdate", auth, upload.single("Image"),(req, res) => {
 			Email: req.body.Email,
 			FirstName: req.body.FirstName,
 			Gender: req.body.Gender,
-			Image: req.file === undefined ? req.body.Image : "http://localhost:5000/" + req.file.filename,
+			Image: req.file === undefined ? req.body.Image : "https://dtodo-indumentaria-server.herokuapp.com/" + req.file.filename,
 			LastName: req.body.LastName,
 			Phoneno: req.body.Phoneno,
 			Username: req.body.Username,
