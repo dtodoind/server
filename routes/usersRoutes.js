@@ -11,12 +11,11 @@ const nodemailer = require("nodemailer");
 // Step 1
 let transporter = nodemailer.createTransport({
 // service: "gmail",
-host: 'smtp.gmail.com',
-port: 465,
-secure: true, 
+host: 'smtp.ethereal.email',
+port: 587,
 auth: {
-	user: process.env.EMAIL,
-	pass: process.env.PASSWORD,
+	user: 'randy.waters21@ethereal.email',
+	pass: 'A9CD9KzHG7rBdWZKqC',
 },
 });
 
