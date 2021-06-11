@@ -17,7 +17,7 @@ const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1IN
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
-async function sendMail() {
+async function sendMail(email) {
 	try {
 		const accessToken = await oAuth2Client.getAccessToken()
 		let transporter = nodemailer.createTransport({
@@ -34,9 +34,13 @@ async function sendMail() {
 		});
 		let mailOptions = {
 			from: process.env.EMAIL,
-			to: 'sbhavesh588@gmail.com',
+			to: email,
 			subject: "Please confirm your account",
-			html: `<h1>Email Confirmation</h1>`,
+			html: `<h1>Email Confirmation</h1>
+					<h2>Hello ${req.body.FirstName} ${req.body.LastName}</h2>
+					<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+					<a href=http://localhost:3000/confirm/${token}> Click here</a>
+				</div>`,
 		};
 
 		const result = await transporter.sendMail(mailOptions);
@@ -45,10 +49,6 @@ async function sendMail() {
 		return error
 	}
 }
-
-sendMail()
-	.then(result => console.log('Email is sent: ', result))
-	.catch(error => console.log('sendMail Error: ', error.message))
 
 // Step 1
 let transporter = nodemailer.createTransport({
@@ -198,27 +198,33 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		confirmationCode: token,
 	})
 	.then((user) => {
-		let mailOptions = {
-			from: process.env.EMAIL,
-			to: req.body.Email,
-			subject: "Please confirm your account",
-			html: `<h1>Email Confirmation</h1>
-					<h2>Hello ${req.body.FirstName} ${req.body.LastName}</h2>
-					<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-					<a href=http://localhost:3000/confirm/${token}> Click here</a>
-				</div>`,
-		};
+		sendMail(req.body.Email)
+			.then(result => {
+				console.log('Email is sent: ', result)
+				res.send(user)
+			})
+			.catch(error => console.log('sendMail Error: ', error.message))
+		// let mailOptions = {
+		// 	from: process.env.EMAIL,
+		// 	to: req.body.Email,
+		// 	subject: "Please confirm your account",
+		// 	html: `<h1>Email Confirmation</h1>
+		// 			<h2>Hello ${req.body.FirstName} ${req.body.LastName}</h2>
+		// 			<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+		// 			<a href=http://localhost:3000/confirm/${token}> Click here</a>
+		// 		</div>`,
+		// };
 
-		transporter.sendMail(mailOptions, function (err, data) {
-			if (err) {
-			console.log("Error Occur: " + err.message);
-			} else {
-			res.send(user);
-			// res.send({
-			// 	message: "User was registered successfully! Please check your email",
-			// });
-			}
-		});
+		// transporter.sendMail(mailOptions, function (err, data) {
+		// 	if (err) {
+		// 	console.log("Error Occur: " + err.message);
+		// 	} else {
+		// 	res.send(user);
+		// 	// res.send({
+		// 	// 	message: "User was registered successfully! Please check your email",
+		// 	// });
+		// 	}
+		// });
 	})
 	.catch((err) => {
 		if (err.errors[0].path === "users.Email") {
