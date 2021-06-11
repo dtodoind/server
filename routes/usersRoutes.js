@@ -165,7 +165,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 			html: `<h1>Email Confirmation</h1>
 					<h2>Hello ${req.body.FirstName} ${req.body.LastName}</h2>
 					<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-					<a href=http://localhost:3000/confirm/${token}> Click here</a>
+					<a href=https://blissful-pasteur-a524ff.netlify.app/confirm/${token}> Click here</a>
 				</div>`,
 		};
 
