@@ -17,7 +17,7 @@ const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1IN
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
-async function sendMail(email) {
+async function sendMail(email, firstname, lastname, token) {
 	try {
 		const accessToken = await oAuth2Client.getAccessToken()
 		let transporter = nodemailer.createTransport({
@@ -37,7 +37,7 @@ async function sendMail(email) {
 			to: email,
 			subject: "Please confirm your account",
 			html: `<h1>Email Confirmation</h1>
-					<h2>Hello ${req.body.FirstName} ${req.body.LastName}</h2>
+					<h2>Hello ${firstname} ${lastname}</h2>
 					<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
 					<a href=http://localhost:3000/confirm/${token}> Click here</a>
 				</div>`,
@@ -51,13 +51,13 @@ async function sendMail(email) {
 }
 
 // Step 1
-let transporter = nodemailer.createTransport({
-	service: "gmail",
-	auth: {
-		user: process.env.EMAIL,
-		pass: process.env.PASSWORD,
-	},
-});
+// let transporter = nodemailer.createTransport({
+// 	service: "gmail",
+// 	auth: {
+// 		user: process.env.EMAIL,
+// 		pass: process.env.PASSWORD,
+// 	},
+// });
 
 const storage = multer.diskStorage({
 destination: function (req, file, cb) {
@@ -198,7 +198,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		confirmationCode: token,
 	})
 	.then((user) => {
-		sendMail(req.body.Email)
+		sendMail(req.body.Email, req.body.FirstName, req.body.LastName, token)
 			.then(result => {
 				console.log('Email is sent: ', result)
 				res.send(user)
