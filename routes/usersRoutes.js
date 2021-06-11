@@ -159,7 +159,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 	})
 	.then((user) => {
 		let mailOptions = {
-			from: process.env.EMAIL,
+			from: 'randy.waters21@ethereal.email',
 			to: req.body.Email,
 			subject: "Please confirm your account",
 			html: `<h1>Email Confirmation</h1>
