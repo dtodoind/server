@@ -10,7 +10,10 @@ const nodemailer = require("nodemailer");
 
 // Step 1
 let transporter = nodemailer.createTransport({
-service: "gmail",
+// service: "gmail",
+host: 'smtp.gmail.com',
+port: 465,
+secure: true, 
 auth: {
 	user: process.env.EMAIL,
 	pass: process.env.PASSWORD,
@@ -139,8 +142,6 @@ router.get("/confirm/:token", (req, res) => {
 
 // Insert user
 router.post("/new", upload.single("Image"), async (req, res) => {
-	console.log(process.env.EMAIL)
-	console.log(process.env.PASSWORD)
 	var ad = [req.body.Address.split(/, /g)];
 	var hashedpass = await bcrypt.hash(req.body.Password, 10);
 	const token = jwt.sign({ Email: req.body.Email }, process.env.SECRET_JWT);
