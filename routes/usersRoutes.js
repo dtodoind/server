@@ -7,16 +7,56 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const multer = require("multer");
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis")
+
+const CLIENT_ID = '199435103308-8fv6qbsn83vbdil5c2nhdcqk1dqqdsfm.apps.googleusercontent.com'
+const CLIENT_SECRET = 'XQ-bOirPmlfhJSDZmSXQhJC2'
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground'
+const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1INIw4Zx7oO03qKIsC89nTYREFwwCeqaWcAh8gMNVat0w2xFY'
+
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
+
+async function sendMail() {
+	try {
+		const accessToken = await oAuth2Client.getAccessToken()
+		let transporter = nodemailer.createTransport({
+			service: "gmail",
+			auth: {
+				type: 'OAuth2',
+				user: process.env.EMAIL,
+				// pass: process.env.PASSWORD,
+				clientId: CLIENT_ID,
+				clientSecret: CLIENT_SECRET,
+				refreshToken: REFRESH_TOKEN,
+				accessToken: accessToken
+			},
+		});
+		let mailOptions = {
+			from: process.env.EMAIL,
+			to: 'sbhavesh588@gmail.com',
+			subject: "Please confirm your account",
+			html: `<h1>Email Confirmation</h1>`,
+		};
+
+		const result = await transporter.sendMail(mailOptions);
+		return result
+	} catch(error) {
+		return error
+	}
+}
+
+sendMail()
+	.then(result => console.log('Email is sent: ', result))
+	.catch(error => console.log('sendMail Error: ', error.message))
 
 // Step 1
 let transporter = nodemailer.createTransport({
-// service: "gmail",
-host: 'smtp.ethereal.email',
-port: 587,
-auth: {
-	user: 'randy.waters21@ethereal.email',
-	pass: 'A9CD9KzHG7rBdWZKqC',
-},
+	service: "gmail",
+	auth: {
+		user: process.env.EMAIL,
+		pass: process.env.PASSWORD,
+	},
 });
 
 const storage = multer.diskStorage({
@@ -159,13 +199,13 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 	})
 	.then((user) => {
 		let mailOptions = {
-			from: 'randy.waters21@ethereal.email',
+			from: process.env.EMAIL,
 			to: req.body.Email,
 			subject: "Please confirm your account",
 			html: `<h1>Email Confirmation</h1>
 					<h2>Hello ${req.body.FirstName} ${req.body.LastName}</h2>
 					<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-					<a href=https://blissful-pasteur-a524ff.netlify.app/confirm/${token}> Click here</a>
+					<a href=http://localhost:3000/confirm/${token}> Click here</a>
 				</div>`,
 		};
 
