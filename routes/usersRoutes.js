@@ -138,15 +138,10 @@ router.get("/confirm/:token", (req, res) => {
 });
 
 // Insert user
-router.post("/new", upload.single("Image"), async (req, res, next) => {
+router.post("/new", upload.single("Image"), async (req, res) => {
+	console.log(req.body)
 	var ad = [req.body.Address.split(/, /g)];
-	try {
-		var hashedpass = await bcrypt.hash(req.body.Password, 10);
-		next()
-	} catch(err) {
-		console.log('there was error in bcrypt')
-		console.log(err)
-	}
+	var hashedpass = await bcrypt.hash(req.body.Password, 10);
 	const token = jwt.sign({ Email: req.body.Email }, process.env.SECRET_JWT);
 	db.Users.create({
 		Username: req.body.Username,
