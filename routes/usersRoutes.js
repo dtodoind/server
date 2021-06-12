@@ -25,7 +25,6 @@ async function sendMail(email, firstname, lastname, token) {
 			auth: {
 				type: 'OAuth2',
 				user: process.env.EMAIL,
-				// pass: process.env.PASSWORD,
 				clientId: CLIENT_ID,
 				clientSecret: CLIENT_SECRET,
 				refreshToken: REFRESH_TOKEN,
