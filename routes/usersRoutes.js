@@ -114,9 +114,15 @@ router.post("/login", (req, res) => {
 		},
   	}).then((result) => {
 		if (result[0].Status != "Inactive") {
-		res.send({
-			error: "Pending Account. Please Verify Your Email!",
-		});
+			if(result[0].Status === "Active") {
+				res.send({
+					error: "You are Logged in other device",
+				});
+			} else {
+				res.send({
+					error: "Pending Account. Please Verify Your Email!",
+				});
+			}
 		} else if (result.length !== 0) {
 		bcrypt
 			.compare(req.body.Password, result[0].dataValues.Password)
