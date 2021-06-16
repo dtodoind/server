@@ -72,8 +72,8 @@ app.use('/admin', adminRoutes)
 const pushnotifyRoutes = require('./routes/pushnotifyRoutes')
 app.use('/pushnotify', pushnotifyRoutes)
 
-// const deliveryRoutes = require('./routes/deliveryRoutes')
-// app.use('/delivery', deliveryRoutes)
+const deliveryRoutes = require('./routes/deliveryRoutes')
+app.use('/delivery', deliveryRoutes)
 
 db.sequelize.sync().then(() => {
     server.listen(process.env.PORT || 5000, () => {
