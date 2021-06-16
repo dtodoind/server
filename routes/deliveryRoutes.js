@@ -6,3 +6,5 @@ const db = require("../models")
 router.get('/all', (req, res) => {
     db.Delivery.findAll().then(delivery => res.send(delivery))
 })
+
+module.exports = router
