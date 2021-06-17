@@ -233,11 +233,11 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		// });
 	})
 	.catch((err) => {
-		console.log(err)
-		if (err.errors[0].path === "users.Email") {
+		console.log(err.errors)
+		if (err.errors[0].path === "Email") {
 			err.message = "Email is already registered";
 			res.send(err.message);
-		} else if (err.errors[0].path === "users.Username") {
+		} else if (err.errors[0].path === "Username") {
 			err.message = "Username is already registered";
 			res.send(err.message);
 		}
