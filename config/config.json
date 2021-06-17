@@ -1,12 +1,10 @@
 {
   "development": {
-    "username": "root",
-    "password": "pass@123",
-    "database": "dtado_db",
-    "host": "127.0.0.1",
-    "dialect": "mysql",
-    "operatorsAliases": 0,
-    "logging": false
+    "username": "b812a2db5b87b6",
+    "password": "990b431c",
+    "database": "heroku_430e9128f222228",
+    "host": "us-cdbr-east-04.cleardb.com",
+    "dialect": "mysql"
   },
   "test": {
     "username": "root",

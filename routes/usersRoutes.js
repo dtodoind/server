@@ -197,7 +197,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		Password: hashedpass,
 		Address: JSON.stringify(ad),
 		Phoneno: req.body.Phoneno,
-		// Zip: req.body.Zip,
+		Zip: JSON.stringify([req.body.Zip]),
 		Gender: req.body.Gender,
 		Image: "https://dtodo-indumentaria-server.herokuapp.com/" + req.file.filename,
 		Status: req.body.Status,
