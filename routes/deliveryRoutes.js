@@ -15,4 +15,13 @@ router.post('/new', (req, res) => {
     }).then(submittedDelivery => res.send(submittedDelivery))
 })
 
+// Delete Delivery
+router.delete('/delete/:id', (req, res) => {
+    db.Delivery.destroy({
+        where: {
+            Delivery_id: req.params.id
+        }
+    }).then(() => res.send("success"))
+})
+
 module.exports = router
