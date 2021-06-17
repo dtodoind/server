@@ -35,10 +35,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        Zip: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
+        // Zip: {
+        //     type: DataTypes.STRING,
+        //     allowNull: false
+        // },
         Gender: {
             type: DataTypes.STRING,
             allowNull: false
