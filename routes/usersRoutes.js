@@ -233,6 +233,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		// });
 	})
 	.catch((err) => {
+		console.log(err)
 		if (err.errors[0].path === "users.Email") {
 			err.message = "Email is already registered";
 			res.send(err.message);
