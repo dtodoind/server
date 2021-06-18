@@ -93,6 +93,7 @@ router.post('/payment', async (req, res) => {
 	
 		res.status(200).send(paymentIntent.client_secret);
 	} catch (error) {
+		console.log(error)
 		res.status(500).json({ statusCode: 500, message: error.message })
 	}
 
