@@ -313,6 +313,7 @@ router.put("/detailsupdate", auth, upload.single("Image"),(req, res) => {
 			Image: req.file === undefined ? req.body.Image : "https://dtodo-indumentaria-server.herokuapp.com/" + req.file.filename,
 			LastName: req.body.LastName,
 			Phoneno: req.body.Phoneno,
+			Zip: req.body.Zip,
 			Username: req.body.Username,
 		},
 		{
