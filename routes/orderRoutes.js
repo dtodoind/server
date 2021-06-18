@@ -87,6 +87,7 @@ router.post('/payment', async (req, res) => {
 		amount: req.body.amount,
 		currency: 'ars',
 	}
+	console.log(body)
 
 	try {
 		const paymentIntent = await stripe.paymentIntents.create(body);
