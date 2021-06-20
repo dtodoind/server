@@ -73,6 +73,7 @@ router.put("/status", (req, res) => {
 	db.Orders.update(
 		{
 			Status: req.body.Status,
+			Delivery_date: req.body.Delivery_date
 		},
 		{
 			where: {
