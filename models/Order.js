@@ -5,6 +5,10 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true
         },
+        PaymentSuccess_id: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         ClientName: {
             type: DataTypes.STRING,
             allowNull: false
