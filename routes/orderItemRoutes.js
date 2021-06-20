@@ -38,7 +38,8 @@ router.post('/new', (req, res) => {
 // Update Status
 router.put('/status', (req, res) => {
     db.OrderItem.update({
-        Status: req.body.Status
+        Status: req.body.Status,
+        Delivery_date: req.body.Delivery_date
     },
     {
         where: {
