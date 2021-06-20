@@ -115,4 +115,11 @@ router.post('/payment', async (req, res) => {
 	// })
 })
 
+router.post('/refund', async (req, res) => {
+	const refund = await stripe.refunds.create({
+		payment_intent: req.body.payment_id,
+	});
+	res.send(refund)
+})
+
 module.exports = router;
