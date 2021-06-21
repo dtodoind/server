@@ -116,10 +116,19 @@ router.post('/payment', async (req, res) => {
 })
 
 router.post('/refund', async (req, res) => {
-	const refund = await stripe.refunds.create({
-		payment_intent: req.body.payment_id,
-	});
-	res.send(refund)
+	var amount = req.body.amount
+	if(amount === undefined) {
+		const refund = await stripe.refunds.create({
+			payment_intent: req.body.payment_id,
+		});
+		res.send(refund)
+	} else {
+		const refund2 = await stripe.refunds.create({
+			amount: amount,
+			payment_intent: req.body.payment_id,
+		});
+		res.send(refund2)
+	}
 })
 
 module.exports = router;
