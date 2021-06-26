@@ -12,10 +12,6 @@ const server = http.createServer(app)
 const io = socketio(server, { cors: {origin: '*'} })
 const process = spawn('python', ['./hello.py'])
 
-process.stdout.on('data', (data) => {
-    console.log(data.toString());
-})
-
 // Run when client connects
 io.on('connection', socket => {
     socket.on('toast', (data) => {
@@ -92,4 +88,8 @@ db.sequelize.sync().then(() => {
     console.log('there was a connection error')
     console.log(err)
     console.log(process.env.PORT)
+})
+
+process.stdout.on('data', (data) => {
+    console.log(data.toString());
 })
