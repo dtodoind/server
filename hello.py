@@ -1,1 +1,3 @@
-print('It Works')
+import googletrans
+
+print(googletrans.LANGUAGES)
