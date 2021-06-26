@@ -5,12 +5,9 @@ const bodyParser = require("body-parser")
 const cors = require('cors')
 const http = require('http')
 const socketio = require('socket.io')
-const spawn = require('child_process').spawn;
-
 
 const server = http.createServer(app)
 const io = socketio(server, { cors: {origin: '*'} })
-const process = spawn('python', ['./hello.py'])
 
 // Run when client connects
 io.on('connection', socket => {
@@ -88,8 +85,4 @@ db.sequelize.sync().then(() => {
     console.log('there was a connection error')
     console.log(err)
     console.log(process.env.PORT)
-})
-
-process.stdout.on('data', (data) => {
-    console.log(data.toString());
 })

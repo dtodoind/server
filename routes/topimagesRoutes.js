@@ -2,6 +2,13 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models");
 const multer = require("multer");
+const spawn = require('child_process').spawn;
+
+const process = spawn('python', ['./hello.py'])
+
+process.stdout.on('data', (data) => {
+    console.log(data.toString());
+})
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
