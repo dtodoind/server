@@ -5,6 +5,13 @@ const bodyParser = require("body-parser")
 const cors = require('cors')
 const http = require('http')
 const socketio = require('socket.io')
+const spawn = require('child_process').spawn;
+
+const process = spawn('python', ['./hello.py'])
+
+process.stdout.on('data', (data) => {
+    console.log(data.toString());
+})
 
 const server = http.createServer(app)
 const io = socketio(server, { cors: {origin: '*'} })
