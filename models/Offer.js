@@ -7,19 +7,23 @@ module.exports = (sequelize, DataTypes) => {
         },
         Offer_Image: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         Discount: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
+        },
+        Promocode: {
+            type: DataTypes.STRING,
+            allowNull: true
         },
         Price: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: true
         },
         Description: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         }
     });
 
