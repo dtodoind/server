@@ -31,6 +31,7 @@ router.post("/new", upload.single("Image"), (req, res) => {
   db.Offer.create({
     Offer_Image: req.body.Offer_Image,
     Discount: req.body.Discount,
+    Promocode: req.body.Promocode,
     Price: req.body.Price,
     Description: req.body.Description,
   }).then((submittedOffer) => res.send(submittedOffer));
@@ -51,6 +52,7 @@ router.put("/edit/:id", upload.single("Image"), (req, res) => {
     {
       Offer_Image: req.body.Offer_Image,
       Discount: req.body.Discount,
+      Promocode: req.body.Promocode,
       Price: req.body.Price,
       Description: req.body.Description,
     },
