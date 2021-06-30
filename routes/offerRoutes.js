@@ -47,6 +47,9 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		Price: req.body.Price,
 		Description: req.body.Description,
 	}).then((submittedOffer) => res.send(submittedOffer));
+	if(req.file !== undefined) {
+		await unLinkFile(req.file.path)
+	}
 });
 
 // Delete Offer
@@ -81,7 +84,9 @@ router.put("/edit/:id", upload.single("Image"), async (req, res) => {
 			},
 		}
 	).then(() => res.send("successfully Updated"));
-	await unLinkFile(req.file.path)
+	if(req.file !== undefined) {
+		await unLinkFile(req.file.path)
+	}
 });
 
 module.exports = router;

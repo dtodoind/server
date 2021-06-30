@@ -333,7 +333,10 @@ router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
 				Users_id: req.body.Users_id,
 			},
 		}
-	).then((re) => res.send("success"));
+	).then((re) => res.send(result));
+	if(req.file !== undefined) {
+		await unLinkFile(req.file.path)
+	}
 });
 
 module.exports = router;
