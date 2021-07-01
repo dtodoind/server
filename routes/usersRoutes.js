@@ -8,6 +8,11 @@ require("dotenv").config();
 const multer = require("multer");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis")
+const { uploadFile } = require('../s3')
+
+const fs = require('fs')
+const util = require('util')
+const unLinkFile = util.promisify(fs.unlink)
 
 const CLIENT_ID = '199435103308-8fv6qbsn83vbdil5c2nhdcqk1dqqdsfm.apps.googleusercontent.com'
 const CLIENT_SECRET = 'XQ-bOirPmlfhJSDZmSXQhJC2'
@@ -303,14 +308,21 @@ db.Users.findOne({
 });
 
 // Update User Details
-router.put("/detailsupdate", auth, upload.single("Image"),(req, res) => {
+router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
+	var result = ''
+	if(req.file === undefined) {
+		result = req.body.Image
+	} else {
+		const val = await uploadFile(req.file, 'Users/')
+		result = val.Location
+	}
 	db.Users.update(
 		{
 			Address: req.body.Address,
 			Email: req.body.Email,
 			FirstName: req.body.FirstName,
 			Gender: req.body.Gender,
-			Image: req.file === undefined ? req.body.Image : "http://localhost:5000/" + req.file.filename,
+			Image: result,
 			LastName: req.body.LastName,
 			Phoneno: req.body.Phoneno,
 			Zip: req.body.Zip,
@@ -321,7 +333,10 @@ router.put("/detailsupdate", auth, upload.single("Image"),(req, res) => {
 				Users_id: req.body.Users_id,
 			},
 		}
-	).then((re) => res.send("success"));
+	).then((re) => res.send(result));
+	if(req.file !== undefined) {
+		await unLinkFile(req.file.path)
+	}
 });
 
 module.exports = router;
