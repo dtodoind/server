@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models")
 const multer = require('multer')
+const { uploadFile } = require('../s3')
+
+const fs = require('fs')
+const util = require('util')
+const unLinkFile = util.promisify(fs.unlink)
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -64,12 +69,21 @@ router.delete('/delete/:id', (req, res) => {
 })
 
 // Update Product
-router.put('/edit', upload.single('productImage'), (req, res) => {
+router.put('/edit', upload.single('productImage'), async (req, res) => {
+    var result = ''
+	if(req.file === undefined) {
+        result = req.body.Image
+	} else {
+		const val = await uploadFile(req.file, `Products/${req.body.Name}/${JSON.parse(req.body.Color)[req.body.imgid]}/`)
+        var imgstore = JSON.parse(req.body.Image)
+        imgstore[req.body.imgid].push(val.Location)
+        result = JSON.stringify(imgstore)
+	}
     db.Product.update({
         Name: req.body.Name,
         Description: req.body.Description,
         Category_id: req.body.Category_id,
-        Image: req.body.Image,
+        Image: result,
         Color: req.body.Color,
         Size: req.body.Size,
         Stock: req.body.Stock,
@@ -80,6 +94,9 @@ router.put('/edit', upload.single('productImage'), (req, res) => {
             Product_id: req.body.Product_id
         }
     }).then(() => res.send("success"))
+    if(req.file !== undefined) {
+		await unLinkFile(req.file.path)
+	}
 })
 
 // Update Product Quantity

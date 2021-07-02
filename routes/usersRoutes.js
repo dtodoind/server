@@ -194,6 +194,10 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 	var ad = [req.body.Address.split(/, /g)];
 	var hashedpass = await bcrypt.hash(req.body.Password, 10);
 	const token = jwt.sign({ Email: req.body.Email }, process.env.SECRET_JWT);
+
+	const val = await uploadFile(req.file, `Users/${req.body.Username}/`)
+	result = val.Location
+
 	db.Users.create({
 		Username: req.body.Username,
 		FirstName: req.body.FirstName,
@@ -204,14 +208,13 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		Phoneno: req.body.Phoneno,
 		Zip: JSON.stringify([req.body.Zip]),
 		Gender: req.body.Gender,
-		Image: "http://localhost:5000/" + req.file.filename,
+		Image: result,
 		Status: req.body.Status,
 		confirmationCode: token,
 	})
 	.then((user) => {
 		sendMail(req.body.Email, req.body.FirstName, req.body.LastName, token)
 			.then(result => {
-				console.log('Email is sent: ', result)
 				res.send(user)
 			})
 			.catch(error => console.log('sendMail Error: ', error.message))
@@ -313,7 +316,7 @@ router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
 	if(req.file === undefined) {
 		result = req.body.Image
 	} else {
-		const val = await uploadFile(req.file, 'Users/')
+		const val = await uploadFile(req.file, `Users/${req.body.Username}/`)
 		result = val.Location
 	}
 	db.Users.update(
@@ -326,7 +329,7 @@ router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
 			LastName: req.body.LastName,
 			Phoneno: req.body.Phoneno,
 			Zip: req.body.Zip,
-			Username: req.body.Username,
+			// Username: req.body.Username,
 		},
 		{
 			where: {

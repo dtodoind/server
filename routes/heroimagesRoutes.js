@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models");
 const multer = require("multer");
+const { uploadFile, deleteFileStream } = require('../s3')
+
+const fs = require('fs')
+const util = require('util')
+const unLinkFile = util.promisify(fs.unlink)
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -28,14 +33,18 @@ router.get("/all", (req, res) => {
 });
 
 // Insert Product
-router.post("/new", upload.single("heroImage"), (req, res) => {
+router.post("/new", upload.single("heroImage"), async (req, res) => {
+  const val = await uploadFile(req.file, 'Hero/')
+  result = val.Location
   db.HeroImages.create({
-    Image: req.file.filename,
+    Image: result,
   }).then((submittedImages) => res.send(submittedImages));
+  await unLinkFile(req.file.path)
 });
 
 // Delete Product
-router.delete("/delete/:id", (req, res) => {
+router.delete("/delete/:id/:key", async (req, res) => {
+  await deleteFileStream(req.params.key, 'Hero/')
   db.HeroImages.destroy({
     where: {
       HeroImages_id: req.params.id,
@@ -44,17 +53,17 @@ router.delete("/delete/:id", (req, res) => {
 });
 
 // Update Product
-router.put("/edit/:id", upload.single("heroImage"), (req, res) => {
-  db.HeroImages.update(
-    {
-      Image: req.body.Image,
-    },
-    {
-      where: {
-        HeroImages_id: req.params.id,
-      },
-    }
-  ).then(() => res.send("success"));
-});
+// router.put("/edit/:id", upload.single("heroImage"), (req, res) => {
+//   db.HeroImages.update(
+//     {
+//       Image: req.body.Image,
+//     },
+//     {
+//       where: {
+//         HeroImages_id: req.params.id,
+//       },
+//     }
+//   ).then(() => res.send("success"));
+// });
 
 module.exports = router;

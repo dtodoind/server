@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models");
 const multer = require("multer");
+const { uploadFile } = require('../s3')
+
+const fs = require('fs')
+const util = require('util')
+const unLinkFile = util.promisify(fs.unlink)
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -28,10 +33,15 @@ router.get("/all", (req, res) => {
 });
 
 // Insert Images
-router.post("/new", upload.single("topImage"), (req, res) => {
+router.post("/new", upload.single("topImage"), async (req, res) => {
+	const val = await uploadFile(req.file, 'TopImages/')
+	result = val.Location
 	db.TopImages.create({
-		Image: req.file.filename,
+		Image: result,
 	}).then((submittedImages) => res.send(submittedImages));
+	if(req.file !== undefined) {
+		await unLinkFile(req.file.path)
+	}
 });
 
 // // Delete Product
@@ -44,10 +54,17 @@ router.post("/new", upload.single("topImage"), (req, res) => {
 // });
 
 // Update Product
-router.put("/edit/:id", upload.single("topImage"), (req, res) => {
+router.put("/edit/:id", upload.single("topImage"), async (req, res) => {
+	var result = ''
+	if(req.file === undefined) {
+		result = req.body.Offer_Image
+	} else {
+		const val = await uploadFile(req.file, 'TopImages/')
+		result = val.Location
+	}
 	db.TopImages.update(
 		{
-			Image: req.file.filename,
+			Image: result,
 		},
 		{
 			where: {
@@ -55,6 +72,9 @@ router.put("/edit/:id", upload.single("topImage"), (req, res) => {
 			},
 		}
 	).then(() => res.send("success"));
+	if(req.file !== undefined) {
+		await unLinkFile(req.file.path)
+	}
 });
 
 module.exports = router;
