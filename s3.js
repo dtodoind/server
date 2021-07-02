@@ -27,13 +27,20 @@ function uploadFile(file, mainPath) {
 }
 exports.uploadFile = uploadFile
 
-// // Downloads a file to s3
-// function getFileStream(fileKey) {
-//     const downloadParams = {
-//         Key: fileKey,
-//         Bucket: bucketName
-//     }
+// Delete a file to s3
+function deleteFileStream(fileKey, mainPath) {
+    const deleteParams = {
+        Key: mainPath+fileKey,
+        Bucket: bucketName  
+    }
+    console.log(deleteParams)
 
-//     return s3.getObject(downloadParams).createReadStream()
-// }
-// exports.getFileStream = getFileStream
+    return s3.deleteObject(deleteParams, (error, data) => {
+        if (error) {
+            console.log(error)
+        } else {
+            console.log("File has been deleted successfully");
+        }
+    })
+}
+exports.deleteFileStream = deleteFileStream
