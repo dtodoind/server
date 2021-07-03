@@ -98,8 +98,8 @@ db.Users.findOne({
 });
 
 // Update User Status
-router.put("/status", auth, (req, res) => {
-  db.Users.update(
+router.put("/status", auth, async (req, res) => {
+  await db.Users.update(
     {
       Status: req.body.Status,
     },
