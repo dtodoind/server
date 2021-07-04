@@ -99,16 +99,17 @@ db.Users.findOne({
 
 // Update User Status
 router.put("/status", auth, async (req, res) => {
-  await db.Users.update(
-    {
-      Status: req.body.Status,
-    },
-    {
-      where: {
-        Users_id: req.body.Users_id,
-      },
-    }
-  ).then((re) => res.send("success"));
+	console.log('it here')
+//   await db.Users.update(
+//     {
+//       Status: req.body.Status,
+//     },
+//     {
+//       where: {
+//         Users_id: req.body.Users_id,
+//       },
+//     }
+//   ).then((re) => res.send("success"));
 });
 
 // Login
