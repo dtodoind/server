@@ -24,19 +24,19 @@ oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
 async function sendMail(email, val, firstname, lastname, token) {
 	try {
+		let transporter = nodemailer.createTransport({
+			service: "gmail",
+			auth: {
+				type: 'OAuth2',
+				user: process.env.EMAIL,
+				clientId: CLIENT_ID,
+				clientSecret: CLIENT_SECRET,
+				refreshToken: REFRESH_TOKEN,
+				accessToken: accessToken
+			},
+		});
 		if(val === 'Sendmail') {
 			const accessToken = await oAuth2Client.getAccessToken()
-			let transporter = nodemailer.createTransport({
-				service: "gmail",
-				auth: {
-					type: 'OAuth2',
-					user: process.env.EMAIL,
-					clientId: CLIENT_ID,
-					clientSecret: CLIENT_SECRET,
-					refreshToken: REFRESH_TOKEN,
-					accessToken: accessToken
-				},
-			});
 			let mailOptions = {
 				from: process.env.EMAIL,
 				to: email,
@@ -58,14 +58,6 @@ async function sendMail(email, val, firstname, lastname, token) {
 				html:
 				'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
 			};
-
-			transporter.sendMail(mailOptions, function (err, data) {
-				if (err) {
-				console.log("Error Occur: " + err.message);
-				} else {
-				res.send(user);
-				}
-			});
 			const result = await transporter.sendMail(mailOptions);
 			return result
 		}
