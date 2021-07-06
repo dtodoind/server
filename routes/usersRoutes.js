@@ -22,33 +22,51 @@ const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1IN
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
-async function sendMail(email, firstname, lastname, token) {
+async function sendMail(email, val, firstname, lastname, token) {
 	try {
-		const accessToken = await oAuth2Client.getAccessToken()
-		let transporter = nodemailer.createTransport({
-			service: "gmail",
-			auth: {
-				type: 'OAuth2',
-				user: process.env.EMAIL,
-				clientId: CLIENT_ID,
-				clientSecret: CLIENT_SECRET,
-				refreshToken: REFRESH_TOKEN,
-				accessToken: accessToken
-			},
-		});
-		let mailOptions = {
-			from: process.env.EMAIL,
-			to: email,
-			subject: "Please confirm your account",
-			html: `<h1>Email Confirmation</h1>
-					<h2>Hello ${firstname} ${lastname}</h2>
-					<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-					<a href=https://blissful-pasteur-a524ff.netlify.app/confirm/${token}> Click here</a>
-				</div>`,
-		};
+		if(val === 'Sendmail') {
+			const accessToken = await oAuth2Client.getAccessToken()
+			let transporter = nodemailer.createTransport({
+				service: "gmail",
+				auth: {
+					type: 'OAuth2',
+					user: process.env.EMAIL,
+					clientId: CLIENT_ID,
+					clientSecret: CLIENT_SECRET,
+					refreshToken: REFRESH_TOKEN,
+					accessToken: accessToken
+				},
+			});
+			let mailOptions = {
+				from: process.env.EMAIL,
+				to: email,
+				subject: "Please confirm your account",
+				html: `<h1>Email Confirmation</h1>
+						<h2>Hello ${firstname} ${lastname}</h2>
+						<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+						<a href=https://blissful-pasteur-a524ff.netlify.app/confirm/${token}> Click here</a>
+					</div>`,
+			};
+	
+			const result = await transporter.sendMail(mailOptions);
+			return result
+		} else {
+			let mailOptions = {
+				from: process.env.EMAIL,
+				to: req.body.email,
+				subject: "Reset Password",
+				html:
+				'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
+			};
 
-		const result = await transporter.sendMail(mailOptions);
-		return result
+			transporter.sendMail(mailOptions, function (err, data) {
+				if (err) {
+				console.log("Error Occur: " + err.message);
+				} else {
+				res.send(user);
+				}
+			});
+		}
 	} catch(error) {
 		return error
 	}
@@ -213,7 +231,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		confirmationCode: token,
 	})
 	.then((user) => {
-		sendMail(req.body.Email, req.body.FirstName, req.body.LastName, token)
+		sendMail(req.body.Email, 'Sendmail', req.body.FirstName, req.body.LastName, token)
 			.then(result => {
 				res.send(user)
 			})
@@ -262,23 +280,25 @@ db.Users.findOne({
 	if (user === "") {
 	res.send(user);
 	} else {
-	// Step 2
-	let mailOptions = {
-		from: process.env.EMAIL,
-		to: req.body.email,
-		subject: "Reset Password",
-		html:
-		'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
-	};
+		sendMail(req.body.Email, 'forgotpass', req.body.FirstName, req.body.LastName, token)
+			.catch(error => console.log('sendMail Error: ', error.message))
+		// // Step 2
+		// let mailOptions = {
+		// 	from: process.env.EMAIL,
+		// 	to: req.body.email,
+		// 	subject: "Reset Password",
+		// 	html:
+		// 	'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
+		// };
 
-	// Step 3
-	transporter.sendMail(mailOptions, function (err, data) {
-		if (err) {
-		console.log("Error Occur: " + err.message);
-		} else {
-		res.send(user);
-		}
-	});
+		// // Step 3
+		// transporter.sendMail(mailOptions, function (err, data) {
+		// 	if (err) {
+		// 	console.log("Error Occur: " + err.message);
+		// 	} else {
+		// 	res.send(user);
+		// 	}
+		// });
 	}
 });
 });
