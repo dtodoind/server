@@ -280,7 +280,7 @@ db.Users.findOne({
 	if (user === "") {
 	res.send(user);
 	} else {
-		sendMail(req.body.Email, 'forgotpass', req.body.FirstName, req.body.LastName, token)
+		sendMail(req.body.Email, 'forgotpass')
 			.catch(error => console.log('sendMail Error: ', error.message))
 		// // Step 2
 		// let mailOptions = {
