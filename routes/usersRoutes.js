@@ -53,7 +53,7 @@ async function sendMail(email, val, firstname, lastname, token) {
 		} else {
 			let mailOptions = {
 				from: process.env.EMAIL,
-				to: req.body.email,
+				to: email,
 				subject: "Reset Password",
 				html:
 				'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
