@@ -281,6 +281,9 @@ db.Users.findOne({
 	res.send(user);
 	} else {
 		sendMail(req.body.Email, 'forgotpass')
+			.then(result => {
+				console.log('successful')
+			})
 			.catch(error => console.log('sendMail Error: ', error.message))
 		// // Step 2
 		// let mailOptions = {
