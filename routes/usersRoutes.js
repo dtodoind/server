@@ -274,7 +274,7 @@ db.Users.findOne({
 	if (user === "") {
 	res.send(user);
 	} else {
-		sendMail(req.body.Email, 'forgotpass')
+		sendMail(req.body.email, 'forgotpass')
 			.then(result => {
 				console.log('successful')
 			})
