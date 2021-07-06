@@ -66,6 +66,8 @@ async function sendMail(email, val, firstname, lastname, token) {
 				res.send(user);
 				}
 			});
+			const result = await transporter.sendMail(mailOptions);
+			return result
 		}
 	} catch(error) {
 		return error
