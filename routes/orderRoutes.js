@@ -52,6 +52,7 @@ router.post('/new', (req, res) => {
 			Discount: req.body.Discount,
 			Address: req.body.Address,
 			Delivery_date: req.body.Delivery_date,
+			Delivery_charges: req.body.Delivery_charges,
 			ClientName: req.body.ClientName,
 			Email: req.body.Email,
 			Phone: req.body.Phone,
