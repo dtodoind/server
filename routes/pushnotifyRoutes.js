@@ -89,7 +89,7 @@ router.get('/all', (req, res) => {
 
 // Insert Product
 router.post('/new', (req, res) => {
-    sendMail(req.body.email)
+    sendMail(req.body.Email, req.body.Subject, req.body.Message, req.body.Date)
         .then(result => {
             console.log('successful')
         })
