@@ -1,3 +1,6 @@
+const nodemailer = require("nodemailer");
+const { google } = require("googleapis")
+
 const CLIENT_ID = '199435103308-8fv6qbsn83vbdil5c2nhdcqk1dqqdsfm.apps.googleusercontent.com'
 const CLIENT_SECRET = 'XQ-bOirPmlfhJSDZmSXQhJC2'
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground'

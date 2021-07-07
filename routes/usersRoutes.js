@@ -9,7 +9,7 @@ const multer = require("multer");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis")
 const { uploadFile } = require('../s3')
-const sendmail = require('./emailconnection')
+const sendMail = require('./emailconnection')
 
 const fs = require('fs')
 const util = require('util')
