@@ -272,11 +272,11 @@ db.Users.findOne({
 	},
 }).then((user) => {
 	if (user === "") {
-	res.send(user);
+		res.send(user);
 	} else {
 		sendMail(req.body.email, 'forgotpass')
 			.then(result => {
-				console.log('successful')
+				res.send('successful')
 			})
 			.catch(error => console.log('sendMail Error: ', error.message))
 		// // Step 2
