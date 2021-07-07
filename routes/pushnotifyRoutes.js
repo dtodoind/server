@@ -12,53 +12,18 @@ const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1IN
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
-async function sendMail(email, subject, message, date) {
-	try {
-		const accessToken = await oAuth2Client.getAccessToken()
-		let transporter = nodemailer.createTransport({
-			service: "gmail",
-			auth: {
-				type: 'OAuth2',
-				user: process.env.EMAIL,
-				clientId: CLIENT_ID,
-				clientSecret: CLIENT_SECRET,
-				refreshToken: REFRESH_TOKEN,
-				accessToken: accessToken
-			},
-		});
-        let mailOptions = {
-            from: process.env.EMAIL,
-            to: email,
-            subject: subject,
-            text: message
-        }
-
-        const result = await transporter.sendMail(mailOptions, function(err, data) {
-            if(err) {
-                if(err.message === 'No recipients defined') {
-                    db.Notify.create({
-                        Date: date,
-                        Email: email,
-                        Message: message,
-                        Subject: subject
-                    }).then(submittedProduct => res.send(submittedProduct))
-                } else {
-                    console.log('Error Occur: ' + err.message)
-                }
-            } else {
-                db.Notify.create({
-                    Date: date,
-                    Email: email,
-                    Message: message,
-                    Subject: subject
-                }).then(submittedProduct => res.send(submittedProduct))
-            }
-        });
-        return result
-	} catch(error) {
-		return error
-	}
-}
+const accessToken = await oAuth2Client.getAccessToken()
+let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        type: 'OAuth2',
+        user: process.env.EMAIL,
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken: accessToken
+    },
+});
 
 // // Step 1
 // let transporter = nodemailer.createTransport({
@@ -88,12 +53,35 @@ router.get('/all', (req, res) => {
 // })
 
 // Insert Product
-router.post('/new', (req, res) => {
-    sendMail(req.body.Email, req.body.Subject, req.body.Message, req.body.Date)
-        .then(result => {
-            console.log('successful')
-        })
-        .catch(error => console.log('sendMail Error: ', error.message))
+router.post('/new', async (req, res) => {
+    let mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: subject,
+        text: message
+    }
+
+    await transporter.sendMail(mailOptions, function(err, data) {
+        if(err) {
+            if(err.message === 'No recipients defined') {
+                db.Notify.create({
+                    Date: date,
+                    Email: email,
+                    Message: message,
+                    Subject: subject
+                }).then(submittedProduct => res.send(submittedProduct))
+            } else {
+                console.log('Error Occur: ' + err.message)
+            }
+        } else {
+            db.Notify.create({
+                Date: date,
+                Email: email,
+                Message: message,
+                Subject: subject
+            }).then(submittedProduct => res.send(submittedProduct))
+        }
+    });
 })
 
 
