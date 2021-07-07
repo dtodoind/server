@@ -11,7 +11,6 @@ const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1IN
 
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
-
 const accessToken = await oAuth2Client.getAccessToken()
 let transporter = nodemailer.createTransport({
     service: "gmail",
@@ -25,7 +24,7 @@ let transporter = nodemailer.createTransport({
     },
 });
 
-// // Step 1
+// Step 1
 // let transporter = nodemailer.createTransport({
 //     service: 'gmail',
 //     auth: {
@@ -53,35 +52,38 @@ router.get('/all', (req, res) => {
 // })
 
 // Insert Product
-router.post('/new', async (req, res) => {
+router.post('/new', (req, res) => {
+
+    // Step 2
     let mailOptions = {
         from: process.env.EMAIL,
-        to: email,
-        subject: subject,
-        text: message
+        to: req.body.Email,
+        subject: req.body.Subject,
+        text: req.body.Message
     }
 
-    await transporter.sendMail(mailOptions, function(err, data) {
+    // Step 3
+    transporter.sendMail(mailOptions, function(err, data) {
         if(err) {
             if(err.message === 'No recipients defined') {
                 db.Notify.create({
-                    Date: date,
-                    Email: email,
-                    Message: message,
-                    Subject: subject
+                    Date: req.body.Date,
+                    Email: req.body.Email,
+                    Message: req.body.Message,
+                    Subject: req.body.Subject
                 }).then(submittedProduct => res.send(submittedProduct))
             } else {
                 console.log('Error Occur: ' + err.message)
             }
         } else {
             db.Notify.create({
-                Date: date,
-                Email: email,
-                Message: message,
-                Subject: subject
+                Date: req.body.Date,
+                Email: req.body.Email,
+                Message: req.body.Message,
+                Subject: req.body.Subject
             }).then(submittedProduct => res.send(submittedProduct))
         }
-    });
+    })
 })
 
 
