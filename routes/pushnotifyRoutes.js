@@ -4,34 +4,14 @@ const db = require("../models")
 const nodemailer = require("nodemailer")
 require('dotenv').config()
 
-const CLIENT_ID = '199435103308-8fv6qbsn83vbdil5c2nhdcqk1dqqdsfm.apps.googleusercontent.com'
-const CLIENT_SECRET = 'XQ-bOirPmlfhJSDZmSXQhJC2'
-const REDIRECT_URI = 'https://developers.google.com/oauthplayground'
-const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1INIw4Zx7oO03qKIsC89nTYREFwwCeqaWcAh8gMNVat0w2xFY'
-
-const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
-const accessToken = await oAuth2Client.getAccessToken()
-let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        type: 'OAuth2',
-        user: process.env.EMAIL,
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        refreshToken: REFRESH_TOKEN,
-        accessToken: accessToken
-    },
-});
-
 // Step 1
-// let transporter = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//         user: process.env.EMAIL,
-//         pass: process.env.PASSWORD
-//     }
-// })
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    }
+})
 
 // All Product Data
 router.get('/all', (req, res) => {
