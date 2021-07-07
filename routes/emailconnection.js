@@ -9,20 +9,20 @@ const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1IN
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
+const accessToken = oAuth2Client.getAccessToken()
+let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        type: 'OAuth2',
+        user: process.env.EMAIL,
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken: accessToken
+    },
+});
 async function sendMail(email, val, firstname, lastname, token) {
 	try {
-		const accessToken = await oAuth2Client.getAccessToken()
-		let transporter = nodemailer.createTransport({
-			service: "gmail",
-			auth: {
-				type: 'OAuth2',
-				user: process.env.EMAIL,
-				clientId: CLIENT_ID,
-				clientSecret: CLIENT_SECRET,
-				refreshToken: REFRESH_TOKEN,
-				accessToken: accessToken
-			},
-		});
 		if(val === 'Sendmail') {
 			let mailOptions = {
 				from: process.env.EMAIL,
