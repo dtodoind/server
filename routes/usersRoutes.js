@@ -208,7 +208,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 	const token = jwt.sign({ Email: req.body.Email }, process.env.SECRET_JWT);
 
 	const val = await uploadFile(req.file, `Users/${req.body.Username}/`)
-	result = val.Location
+	const result = val.Location
 
 	db.Users.create({
 		Username: req.body.Username,
@@ -226,7 +226,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 	})
 	.then((user) => {
 		sendMail(req.body.Email, 'Sendmail', req.body.FirstName, req.body.LastName, token)
-			.then(result => {
+			.then(resul => {
 				res.send(user)
 			})
 			.catch(error => console.log('sendMail Error: ', error.message))
