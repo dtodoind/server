@@ -35,12 +35,12 @@ router.get("/all", (req, res) => {
 // Insert Product
 router.post("/new", upload.single("heroImage"), async (req, res) => {
   console.log(req.file)
-  // const val = await uploadFile(req.file, 'Hero/')
-  // var result = val.Location
-  // db.HeroImages.create({
-  //   Image: result,
-  // }).then((submittedImages) => res.send(submittedImages));
-  // await unLinkFile(req.file.path)
+  const val = await uploadFile(req.file, 'Hero/')
+  var result = val.Location
+  db.HeroImages.create({
+    Image: result,
+  }).then((submittedImages) => res.send(submittedImages));
+  await unLinkFile(req.file.path)
 });
 
 // Delete Product
