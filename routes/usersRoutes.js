@@ -77,7 +77,10 @@ async function sendMail(email, val, firstname, lastname, token) {
 
 const storage = multer.diskStorage({
 destination: function (req, file, cb) {
-	cb(null, "./uploads/");
+	// cb(null, "./uploads/");
+	const dir = './uploads/'
+
+    fs.mkdir(dir, err => cb(err, dir))
 },
 filename: function (req, file, cb) {
 	cb(null, file.originalname);
