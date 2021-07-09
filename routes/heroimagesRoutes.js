@@ -35,7 +35,7 @@ router.get("/all", (req, res) => {
 // Insert Product
 router.post("/new", upload.single("heroImage"), async (req, res) => {
   const val = await uploadFile(req.file, 'Hero/')
-  result = val.Location
+  var result = val.Location
   db.HeroImages.create({
     Image: result,
   }).then((submittedImages) => res.send(submittedImages));
