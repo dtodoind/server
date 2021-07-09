@@ -32,8 +32,8 @@ router.get("/find/:id", (req, res) => {
 
 
 // Insert Review
-router.post("/new", (req, res) => {
-	db.Review.create({
+router.post("/new", async (req, res) => {
+	await db.Review.create({
 		Users_id: req.body.Users_id,
 		Message: req.body.Message,
 		Image: req.body.Image,

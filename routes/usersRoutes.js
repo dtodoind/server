@@ -22,7 +22,7 @@ const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1IN
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
-async function sendMail(email, firstname, lastname, token) {
+async function sendMail(email, val, firstname, lastname, token) {
 	try {
 		const accessToken = await oAuth2Client.getAccessToken()
 		let transporter = nodemailer.createTransport({
@@ -36,19 +36,31 @@ async function sendMail(email, firstname, lastname, token) {
 				accessToken: accessToken
 			},
 		});
-		let mailOptions = {
-			from: process.env.EMAIL,
-			to: email,
-			subject: "Please confirm your account",
-			html: `<h1>Email Confirmation</h1>
-					<h2>Hello ${firstname} ${lastname}</h2>
-					<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-					<a href=https://blissful-pasteur-a524ff.netlify.app/confirm/${token}> Click here</a>
-				</div>`,
-		};
-
-		const result = await transporter.sendMail(mailOptions);
-		return result
+		if(val === 'Sendmail') {
+			let mailOptions = {
+				from: process.env.EMAIL,
+				to: email,
+				subject: "Please confirm your account",
+				html: `<h1>Email Confirmation</h1>
+						<h2>Hello ${firstname} ${lastname}</h2>
+						<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+						<a href=https://blissful-pasteur-a524ff.netlify.app/confirm/${token}> Click here</a>
+					</div>`,
+			};
+	
+			const result = await transporter.sendMail(mailOptions);
+			return result
+		} else {
+			let mailOptions = {
+				from: process.env.EMAIL,
+				to: email,
+				subject: "Reset Password",
+				html:
+				'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
+			};
+			const result2 = await transporter.sendMail(mailOptions);
+			return result2
+		}
 	} catch(error) {
 		return error
 	}
@@ -65,7 +77,13 @@ async function sendMail(email, firstname, lastname, token) {
 
 const storage = multer.diskStorage({
 destination: function (req, file, cb) {
-	cb(null, "./uploads/");
+	const dir = './uploads/'
+	
+	if(!fs.existsSync(dir)) {
+		fs.mkdir(dir, err => cb(err, dir))
+	} else {
+		cb(null, "./uploads/");
+	}
 },
 filename: function (req, file, cb) {
 	cb(null, file.originalname);
@@ -98,8 +116,8 @@ db.Users.findOne({
 });
 
 // Update User Status
-router.put("/status", auth, (req, res) => {
-  db.Users.update(
+router.put("/status", auth, async (req, res) => {
+  await db.Users.update(
     {
       Status: req.body.Status,
     },
@@ -196,7 +214,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 	const token = jwt.sign({ Email: req.body.Email }, process.env.SECRET_JWT);
 
 	const val = await uploadFile(req.file, `Users/${req.body.Username}/`)
-	result = val.Location
+	const result = val.Location
 
 	db.Users.create({
 		Username: req.body.Username,
@@ -213,8 +231,8 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		confirmationCode: token,
 	})
 	.then((user) => {
-		sendMail(req.body.Email, req.body.FirstName, req.body.LastName, token)
-			.then(result => {
+		sendMail(req.body.Email, 'Sendmail', req.body.FirstName, req.body.LastName, token)
+			.then(resul => {
 				res.send(user)
 			})
 			.catch(error => console.log('sendMail Error: ', error.message))
@@ -260,25 +278,30 @@ db.Users.findOne({
 	},
 }).then((user) => {
 	if (user === "") {
-	res.send(user);
-	} else {
-	// Step 2
-	let mailOptions = {
-		from: process.env.EMAIL,
-		to: req.body.email,
-		subject: "Reset Password",
-		html:
-		'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
-	};
-
-	// Step 3
-	transporter.sendMail(mailOptions, function (err, data) {
-		if (err) {
-		console.log("Error Occur: " + err.message);
-		} else {
 		res.send(user);
-		}
-	});
+	} else {
+		sendMail(req.body.email, 'forgotpass')
+			.then(result => {
+				res.send('successful')
+			})
+			.catch(error => console.log('sendMail Error: ', error.message))
+		// // Step 2
+		// let mailOptions = {
+		// 	from: process.env.EMAIL,
+		// 	to: req.body.email,
+		// 	subject: "Reset Password",
+		// 	html:
+		// 	'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
+		// };
+
+		// // Step 3
+		// transporter.sendMail(mailOptions, function (err, data) {
+		// 	if (err) {
+		// 	console.log("Error Occur: " + err.message);
+		// 	} else {
+		// 	res.send(user);
+		// 	}
+		// });
 	}
 });
 });
