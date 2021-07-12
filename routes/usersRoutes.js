@@ -56,7 +56,7 @@ async function sendMail(email, val, firstname, lastname, token) {
 				to: email,
 				subject: "Reset Password",
 				html:
-				'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
+				'<p> <a href="https://blissful-pasteur-a524ff.netlify.app/resetpassword"> Click here </a> to Reset Password </p>',
 			};
 			const result2 = await transporter.sendMail(mailOptions);
 			return result2
