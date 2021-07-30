@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../models");
 const auth = require("../middleware/auth");
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+var mercadopago = require('mercadopago');
 
 // All Order Data
 router.get("/all", (req, res) => {
@@ -86,20 +87,55 @@ router.put("/status", (req, res) => {
 });
 
 router.post('/payment', async (req, res) => {
-	const body = {
-		amount: req.body.amount,
-		currency: 'ars',
-	}
-
-	try {
-		const paymentIntent = await stripe.paymentIntents.create(body);
 	
-		res.status(200).send(paymentIntent.client_secret);
-	} catch (error) {
-		console.log(error)
-		res.status(500).json({ statusCode: 500, message: error.message })
-	}
+	mercadopago.configure({
+		access_token: 'APP_USR-5883300347000345-072919-70ca0a0d649f0b999c8c5865da022fdd-798958320'
+	});
+	
+	let preference = {
+		items: req.body.item,
+		payer: req.body.payer,
+		back_urls: {
+			"success": 'http://localhost:3000/account/Order'
+		},
+		payment_methods: {
+			excluded_payment_methods: [
+				{
+					id: "visa"
+				}
+			],
+			excluded_payment_types: [
+				{
+					id: "ticket"
+				}
+			],
+			installments: 1
+		}
+	};
+	  
+	mercadopago.preferences.create(preference)
+	.then(function(response){
+		var global = response.body.id;
+		res.send(response)
+	}).catch(function(error){
+		console.log(error);
+	});
 
+	
+
+	// const body = {
+	// 	amount: req.body.amount,
+	// 	currency: 'ars',
+	// }
+
+	// try {
+	// 	const paymentIntent = await stripe.paymentIntents.create(body);
+	
+	// 	res.status(200).send(paymentIntent.client_secret);
+	// } catch (error) {
+	// 	console.log(error)
+	// 	res.status(500).json({ statusCode: 500, message: error.message })
+	// }
 
 	// var payload = await stripe.paymentMethods.create({
 	// 	type: req.body.type,
