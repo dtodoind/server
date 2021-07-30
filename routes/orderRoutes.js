@@ -48,7 +48,7 @@ router.get("/all/:id", auth, (req, res) => {
 // Insert Order
 router.post('/new', (req, res) => {
 		db.Orders.create({
-			PaymentSuccess_id: req.body.PaymentSuccess,
+			// PaymentSuccess_id: req.body.PaymentSuccess,
 			Status: req.body.Status,
 			Discount: req.body.Discount,
 			Address: req.body.Address,
@@ -96,7 +96,7 @@ router.post('/payment', async (req, res) => {
 		items: req.body.item,
 		payer: req.body.payer,
 		back_urls: {
-			"success": 'http://localhost:3000/account/Order'
+			"success": 'http://localhost:3000/checkout'
 		},
 		payment_methods: {
 			excluded_payment_methods: [
