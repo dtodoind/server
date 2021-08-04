@@ -235,7 +235,7 @@ router.get("/confirm/:token", (req, res) => {
 router.post("/new", upload.single("Image"), async (req, res) => {
 	// var ad = [req.body.Address.split(/, /g)];
 	var hashedpass = ''
-	console.log(req.body.Password)
+	// console.log(req.body.Password)
 	if(req.body.Password !== undefined) {
 		hashedpass = await bcrypt.hash(req.body.Password, 10);
 	}
@@ -296,7 +296,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		// });
 	})
 	.catch((err) => {
-		// console.log(err.errors)
+		// console.log(err)
 		if (err.errors[0].path === "users.Email") {
 			err.message = "Email is already registered";
 			res.send(err.message);
