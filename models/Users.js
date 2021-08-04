@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             unique: true,
         },
-        Username: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-        },
+        // Username: {
+        //     type: DataTypes.STRING,
+        //     allowNull: false,
+        //     unique: true,
+        // },
         FirstName: {
             type: DataTypes.STRING,
             allowNull: false
@@ -25,24 +25,24 @@ module.exports = (sequelize, DataTypes) => {
         },
         Password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         Phoneno: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         Address: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         Zip: {
             type: DataTypes.STRING,
             allowNull: true
         },
-        Gender: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
+        // Gender: {
+        //     type: DataTypes.STRING,
+        //     allowNull: false
+        // },
         Image: {
             type: DataTypes.STRING,
             allowNull: false

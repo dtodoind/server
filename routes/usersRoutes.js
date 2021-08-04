@@ -9,7 +9,7 @@ const multer = require("multer");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis")
 const { uploadFile } = require('../s3')
-
+const { OAuth2Client } = require('google-auth-library')
 const fs = require('fs')
 const util = require('util')
 const unLinkFile = util.promisify(fs.unlink)
@@ -21,6 +21,8 @@ const REFRESH_TOKEN = '1//04S128V_zfmE_CgYIARAAGAQSNwF-L9IrThlwru_eMtvR2qHnUW1IN
 
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
+
+const client = new OAuth2Client("131686820820-o2n7o0hssp8m13kqjvl91iujoq4kf3c0.apps.googleusercontent.com")
 
 async function sendMail(email, val, firstname, lastname, token) {
 	try {
@@ -44,7 +46,7 @@ async function sendMail(email, val, firstname, lastname, token) {
 				html: `<h1>Email Confirmation</h1>
 						<h2>Hello ${firstname} ${lastname}</h2>
 						<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-						<a href=https://blissful-pasteur-a524ff.netlify.app/confirm/${token}> Click here</a>
+						<a href=http://localhost:3000/confirm/${token}> Click here</a>
 					</div>`,
 			};
 	
@@ -56,7 +58,7 @@ async function sendMail(email, val, firstname, lastname, token) {
 				to: email,
 				subject: "Reset Password",
 				html:
-				'<p> <a href="https://blissful-pasteur-a524ff.netlify.app/resetpassword"> Click here </a> to Reset Password </p>',
+				'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
 			};
 			const result2 = await transporter.sendMail(mailOptions);
 			return result2
@@ -116,15 +118,15 @@ db.Users.findOne({
 });
 
 // Update User Status
-router.put("/status", auth, async (req, res) => {
+router.put("/status", async (req, res) => {
   await db.Users.update(
     {
-      Status: req.body.Status,
+      	Status: req.body.Status,
     },
     {
-      where: {
-        Users_id: req.body.Users_id,
-      },
+		where: {
+			Users_id: req.body.Users_id,
+		},
     }
   ).then((re) => res.send("success"));
 });
@@ -147,41 +149,63 @@ router.post("/login", (req, res) => {
 				});
 			}
 		} else if (result.length !== 0) {
-		bcrypt
-			.compare(req.body.Password, result[0].dataValues.Password)
-			.then((auth) => {
-			if (auth) {
-				jwt.sign(
-				{ id: result[0].dataValues.Users_id },
-				process.env.SECRET_JWT,
-				(err, token) => {
-					if (err) throw err;
+			if(result[0].dataValues.Password !== null) {
+				if(req.body.Password !== null) {
+					bcrypt
+						.compare(req.body.Password, result[0].dataValues.Password)
+						.then((auth) => {
+						if (auth) {
+							jwt.sign(
+							{ id: result[0].dataValues.Users_id },
+							process.env.SECRET_JWT,
+							(err, token) => {
+								if (err) throw err;
+								res.json({
+									token,
+									loggedIn: true,
+									result: JSON.stringify(result),
+								});
+							}
+							);
+						} else {
+							res.json({
+							loggedIn: false,
+							error: "Your email or password is incorrect",
+							});
+						}
+						});
+				} else {
 					res.json({
-						token,
-						loggedIn: true,
-						result: JSON.stringify(result),
+						loggedIn: false,
+						error: "You are registered with Email and Password",
 					});
 				}
-				);
 			} else {
-				res.json({
-				loggedIn: false,
-				error: "Your email or password is incorrect",
-				});
+				if(req.body.Password === null) {
+					const tokenId = req.body.confirmationCode
+					client.verifyIdToken({idToken: tokenId, audience: "131686820820-o2n7o0hssp8m13kqjvl91iujoq4kf3c0.apps.googleusercontent.com"}).then(response => {
+						// console.log(response.payload)
+						res.json({
+							tokenId,
+							loggedIn: true,
+							result: JSON.stringify(result),
+						})
+					})
+					// .catch(err => console.log(err))
+				} else {
+					res.json({
+						loggedIn: false,
+						error: "Your email or password is incorrect",
+					});
+				}
 			}
-			});
-		} else {
-		res.json({
-			loggedIn: false,
-			error: "Your email or password is incorrect",
-		});
 		}
-  	}).catch((err) => 
+  	}).catch((err) => {
 		res.json({
 			loggedIn: false,
 			error: "You are Not Registered",
 		})
-	);
+	});
 });
 
 router.get("/confirm/:token", (req, res) => {
@@ -209,33 +233,46 @@ router.get("/confirm/:token", (req, res) => {
 
 // Insert user
 router.post("/new", upload.single("Image"), async (req, res) => {
-	var ad = [req.body.Address.split(/, /g)];
-	var hashedpass = await bcrypt.hash(req.body.Password, 10);
-	const token = jwt.sign({ Email: req.body.Email }, process.env.SECRET_JWT);
+	// var ad = [req.body.Address.split(/, /g)];
+	var hashedpass = ''
+	console.log(req.body.Password)
+	if(req.body.Password !== undefined) {
+		hashedpass = await bcrypt.hash(req.body.Password, 10);
+	}
+	const token = req.body.confirmationCode ? req.body.confirmationCode : jwt.sign({ Email: req.body.Email }, process.env.SECRET_JWT);
 
-	const val = await uploadFile(req.file, `Users/${req.body.Username}/`)
-	const result = val.Location
+	var result = ''
+	if(req.file === undefined) {
+		result = req.body.Image
+	} else {
+		const val = await uploadFile(req.file, `Users/${req.body.FirstName+ ' ' + req.body.LastName}/`)
+		result = val.Location
+	}
 
 	db.Users.create({
-		Username: req.body.Username,
+		// Username: req.body.Username,
 		FirstName: req.body.FirstName,
 		LastName: req.body.LastName,
 		Email: req.body.Email,
-		Password: hashedpass,
-		Address: JSON.stringify(ad),
-		Phoneno: req.body.Phoneno,
-		Zip: JSON.stringify([req.body.Zip]),
-		Gender: req.body.Gender,
+		Password: hashedpass === '' ? null : hashedpass,
+		// Address: JSON.stringify(ad),
+		// Phoneno: req.body.Phoneno,
+		// Zip: JSON.stringify([req.body.Zip]),
+		// Gender: req.body.Gender,
 		Image: result,
 		Status: req.body.Status,
 		confirmationCode: token,
 	})
 	.then((user) => {
-		sendMail(req.body.Email, 'Sendmail', req.body.FirstName, req.body.LastName, token)
-			.then(resul => {
-				res.send(user)
-			})
-			.catch(error => console.log('sendMail Error: ', error.message))
+		if(req.body.Password !== undefined) {
+			sendMail(req.body.Email, 'Sendmail', req.body.FirstName, req.body.LastName, token)
+				.then(resul => {
+					res.send(user)
+				})
+				.catch(error => console.log('sendMail Error: ', error.message))
+		} else {
+			res.send("Email is already registered")
+		}
 		// let mailOptions = {
 		// 	from: process.env.EMAIL,
 		// 	to: req.body.Email,
@@ -260,11 +297,8 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 	})
 	.catch((err) => {
 		console.log(err.errors)
-		if (err.errors[0].path === "Email") {
+		if (err.errors[0].path === "users.Email") {
 			err.message = "Email is already registered";
-			res.send(err.message);
-		} else if (err.errors[0].path === "Username") {
-			err.message = "Username is already registered";
 			res.send(err.message);
 		}
 	});
