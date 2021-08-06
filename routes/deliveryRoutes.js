@@ -10,7 +10,8 @@ router.get('/all', (req, res) => {
 // Insert Delivery
 router.post('/new', (req, res) => {
     db.Delivery.create({
-        Region: req.body.Zip,
+        State: req.body.State,
+        State2: req.body.State2,
         Charges: req.body.Charges
     }).then(submittedDelivery => res.send(submittedDelivery))
 })

@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         confirmationCode: { 
-            type: DataTypes.STRING(1000),
+            type: DataTypes.STRING(1500),
 			defaultValue: false,
         }
     });

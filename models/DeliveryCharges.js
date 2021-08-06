@@ -7,8 +7,12 @@ module.exports = (sequelize, DataTypes) => {
 				autoIncrement: true,
 				primaryKey: true,
 			},
-			Region: {
-				type: DataTypes.INTEGER,
+			State: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
+			State2: {
+				type: DataTypes.STRING,
 				allowNull: false,
 			},
 			Charges: {
