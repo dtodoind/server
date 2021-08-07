@@ -368,9 +368,8 @@ db.Users.findOne({
 });
 
 // Update User Details
-router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
+router.put("/detailsupdate", upload.single("Image"), async (req, res) => {
 	var result = ''
-	console.log(req.body.Image)
 	if(req.file === undefined) {
 		result = req.body.Image
 	} else {
@@ -394,7 +393,7 @@ router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
 				Users_id: req.body.Users_id,
 			},
 		}
-	).then((re) => res.send(result))
+	).then((re) => res.send(re))
 	.catch(err => console.log(err))
 	if(req.file !== undefined) {
 		await unLinkFile(req.file.path)
