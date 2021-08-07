@@ -33,6 +33,7 @@ router.post('/new', (req, res) => {
         Image: req.body.Image,
         Status: req.body.Status
     }).then(submittedOrderItem => res.send(submittedOrderItem))
+    .catch(err => console.log(err))
 })
 
 // Update Status

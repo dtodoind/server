@@ -370,6 +370,7 @@ db.Users.findOne({
 // Update User Details
 router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
 	var result = ''
+	console.log(req.body.Image)
 	if(req.file === undefined) {
 		result = req.body.Image
 	} else {
@@ -385,7 +386,7 @@ router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
 			Image: result,
 			LastName: req.body.LastName,
 			Phoneno: req.body.Phoneno,
-			Zip: req.body.Zip,
+			// Zip: req.body.Zip,
 			// Username: req.body.Username,
 		},
 		{
@@ -393,7 +394,8 @@ router.put("/detailsupdate", auth, upload.single("Image"), async (req, res) => {
 				Users_id: req.body.Users_id,
 			},
 		}
-	).then((re) => res.send(result));
+	).then((re) => res.send(result))
+	.catch(err => console.log(err))
 	if(req.file !== undefined) {
 		await unLinkFile(req.file.path)
 	}
