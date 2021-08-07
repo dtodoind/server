@@ -153,7 +153,7 @@ router.post('/payment', async (req, res) => {
 })
 
 router.post('/refund', async (req, res) => {
-	var amount = req.body.refund_amount
+	var amount = parseInt(req.body.refund_amount)
 	if(amount === undefined) {
 		const refund = await stripe.refunds.create({
 			payment_intent: req.body.payment_id,
