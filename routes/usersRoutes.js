@@ -191,7 +191,7 @@ router.post("/login", (req, res) => {
 							result: JSON.stringify(result),
 						})
 					})
-					// .catch(err => console.log(err))
+					.catch(err => res.send(err))
 				} else {
 					res.json({
 						loggedIn: false,
