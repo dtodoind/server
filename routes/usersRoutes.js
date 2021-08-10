@@ -181,22 +181,34 @@ router.post("/login", (req, res) => {
 					});
 				}
 			} else {
-				if(req.body.Password === null) {
-					const tokenId = req.body.confirmationCode
-					client.verifyIdToken({idToken: tokenId, audience: "131686820820-o2n7o0hssp8m13kqjvl91iujoq4kf3c0.apps.googleusercontent.com"}).then(response => {
-						// console.log(response.payload)
-						res.json({
-							tokenId,
-							loggedIn: true,
-							result: JSON.stringify(result),
-						})
-					})
-					.catch(err => res.send(err))
+				if(result[0].Status === "Active") {
+					if(result[0].Status === "Active") {
+						res.send({
+							error: "You are Logged in other device",
+						});
+					} else {
+						res.send({
+							error: "Pending Account. Please Verify Your Email!",
+						});
+					}
 				} else {
-					res.json({
-						loggedIn: false,
-						error: "Your email or password is incorrect",
-					});
+					if(req.body.Password === null) {
+						const tokenId = req.body.confirmationCode
+						client.verifyIdToken({idToken: tokenId, audience: "131686820820-o2n7o0hssp8m13kqjvl91iujoq4kf3c0.apps.googleusercontent.com"}).then(response => {
+							// console.log(response.payload)
+							res.json({
+								tokenId,
+								loggedIn: true,
+								result: JSON.stringify(result),
+							})
+						})
+						.catch(err => res.send(err))
+					} else {
+						res.json({
+							loggedIn: false,
+							error: "Your email or password is incorrect",
+						});
+					}
 				}
 			}
 		}
