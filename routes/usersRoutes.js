@@ -209,6 +209,7 @@ router.post("/login", (req, res) => {
 			}
 		}
   	}).catch((err) => {
+		console.log(err)
 		res.json({
 			loggedIn: false,
 			error: "You are Not Registered",
