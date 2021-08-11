@@ -46,7 +46,7 @@ async function sendMail(email, val, firstname, lastname, token) {
 				html: `<h1>Email Confirmation</h1>
 						<h2>Hello ${firstname} ${lastname}</h2>
 						<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-						<a href=http://localhost:3000/confirm/${token}> Click here</a>
+						<a href=https://www.dtodoind.com/confirm/${token}> Click here</a>
 					</div>`,
 			};
 	
@@ -58,7 +58,7 @@ async function sendMail(email, val, firstname, lastname, token) {
 				to: email,
 				subject: "Reset Password",
 				html:
-				'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
+				'<p> <a href="https://www.dtodoind.com/resetpassword"> Click here </a> to Reset Password </p>',
 			};
 			const result2 = await transporter.sendMail(mailOptions);
 			return result2
@@ -138,7 +138,8 @@ router.post("/login", (req, res) => {
 			Email: req.body.Email,
 		},
   	}).then((result) => {
-		if (result[0].Status != "Inactive") {
+		// console.log(result[0].Status)
+		if (result[0].Status !== "Inactive") {
 			if(result[0].Status === "Active") {
 				res.send({
 					error: "You are Logged in other device",
@@ -181,26 +182,35 @@ router.post("/login", (req, res) => {
 					});
 				}
 			} else {
-				if(req.body.Password === null) {
-					const tokenId = req.body.confirmationCode
-					client.verifyIdToken({idToken: tokenId, audience: "131686820820-o2n7o0hssp8m13kqjvl91iujoq4kf3c0.apps.googleusercontent.com"}).then(response => {
-						// console.log(response.payload)
-						res.json({
-							tokenId,
-							loggedIn: true,
-							result: JSON.stringify(result),
-						})
-					})
-					// .catch(err => console.log(err))
+				if(result[0].Status === "Active") {
+					if(result[0].Status === "Active") {
+						res.send({
+							error: "You are Logged in other device",
+						});
+					}
 				} else {
-					res.json({
-						loggedIn: false,
-						error: "Your email or password is incorrect",
-					});
+					if(req.body.Password === null) {
+						const tokenId = req.body.confirmationCode
+						client.verifyIdToken({idToken: tokenId, audience: "131686820820-o2n7o0hssp8m13kqjvl91iujoq4kf3c0.apps.googleusercontent.com"}).then(response => {
+							console.log(response.payload)
+							res.json({
+								tokenId,
+								loggedIn: true,
+								result: JSON.stringify(result),
+							})
+						})
+						.catch(err => res.send(err))
+					} else {
+						res.json({
+							loggedIn: false,
+							error: "Your email or password is incorrect",
+						});
+					}
 				}
 			}
 		}
   	}).catch((err) => {
+		console.log(err)
 		res.json({
 			loggedIn: false,
 			error: "You are Not Registered",
@@ -280,7 +290,7 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		// 	html: `<h1>Email Confirmation</h1>
 		// 			<h2>Hello ${req.body.FirstName} ${req.body.LastName}</h2>
 		// 			<p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-		// 			<a href=http://localhost:3000/confirm/${token}> Click here</a>
+		// 			<a href=https://www.dtodoind.com/confirm/${token}> Click here</a>
 		// 		</div>`,
 		// };
 
@@ -296,8 +306,8 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		// });
 	})
 	.catch((err) => {
-		// console.log(err)
-		if (err.errors[0].path === "users.Email") {
+		console.log(err.errors)
+		if (err.errors[0].type === "unique violation") {
 			err.message = "Email is already registered";
 			res.send(err.message);
 		}
@@ -325,7 +335,7 @@ db.Users.findOne({
 		// 	to: req.body.email,
 		// 	subject: "Reset Password",
 		// 	html:
-		// 	'<p> <a href="http://localhost:3000/resetpassword"> Click here </a> to Reset Password </p>',
+		// 	'<p> <a href="https://www.dtodoind.com/resetpassword"> Click here </a> to Reset Password </p>',
 		// };
 
 		// // Step 3

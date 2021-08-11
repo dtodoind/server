@@ -94,16 +94,16 @@ router.post('/payment', async (req, res) => {
 	
 	let preference = {
 		items: req.body.item,
-		payer: req.body.payer,
+		// payer: req.body.payer,
 		back_urls: {
-			"success": 'http://localhost:3000/checkout'
+			"success": 'https://www.dtodoind.com/checkout'
 		},
 		payment_methods: {
-			excluded_payment_methods: [
-				{
-					id: "visa"
-				}
-			],
+			// excluded_payment_methods: [
+			// 	{
+			// 		id: "visa"
+			// 	}
+			// ],
 			excluded_payment_types: [
 				{
 					id: "ticket"
