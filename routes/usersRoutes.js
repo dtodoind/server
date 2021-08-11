@@ -138,7 +138,8 @@ router.post("/login", (req, res) => {
 			Email: req.body.Email,
 		},
   	}).then((result) => {
-		if (result[0].Status != "Inactive") {
+		// console.log(result[0].Status)
+		if (result[0].Status !== "Inactive") {
 			if(result[0].Status === "Active") {
 				res.send({
 					error: "You are Logged in other device",
@@ -191,7 +192,7 @@ router.post("/login", (req, res) => {
 					if(req.body.Password === null) {
 						const tokenId = req.body.confirmationCode
 						client.verifyIdToken({idToken: tokenId, audience: "131686820820-o2n7o0hssp8m13kqjvl91iujoq4kf3c0.apps.googleusercontent.com"}).then(response => {
-							// console.log(response.payload)
+							console.log(response.payload)
 							res.json({
 								tokenId,
 								loggedIn: true,
@@ -305,8 +306,8 @@ router.post("/new", upload.single("Image"), async (req, res) => {
 		// });
 	})
 	.catch((err) => {
-		// console.log(err)
 		if (err.errors[0].path === "users.Email") {
+			console.log('its here')
 			err.message = "Email is already registered";
 			res.send(err.message);
 		}
