@@ -104,11 +104,11 @@ router.post('/payment', async (req, res) => {
 			// 		id: "visa"
 			// 	}
 			// ],
-			// excluded_payment_types: [
-			// 	{
-			// 		id: "ticket"
-			// 	}
-			// ],
+			excluded_payment_types: [
+				{
+					id: "ticket"
+				}
+			],
 			installments: 1
 		}
 	};
