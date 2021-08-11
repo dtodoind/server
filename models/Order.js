@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         Address: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(3000),
             allowNull: false
         },
         Delivery_date: {

@@ -20,7 +20,7 @@ router.get("/all", (req, res) => {
 });
 
 // Specific Order
-router.get("/all/:id", auth, (req, res) => {
+router.get("/all/:id", (req, res) => {
 	db.Orders.findAll({
 		include: [
 			{

@@ -110,11 +110,11 @@ db.Users.findAll().then((users) => res.send(users));
 
 // Find One User Data
 router.get("/singleuser/:id", (req, res) => {
-db.Users.findOne({
-	where: {
-	Users_id: req.params.id,
-	},
-}).then((users) => res.send(users));
+	db.Users.findOne({
+		where: {
+		Users_id: req.params.id,
+		},
+	}).then((users) => res.send(users));
 });
 
 // Update User Status
