@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         Address: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(3000),
             allowNull: true
         },
         Zip: {

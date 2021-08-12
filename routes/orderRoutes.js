@@ -47,18 +47,18 @@ router.get("/all/:id", (req, res) => {
 
 // Insert Order
 router.post('/new', (req, res) => {
-		db.Orders.create({
-			// PaymentSuccess_id: req.body.PaymentSuccess,
-			Status: req.body.Status,
-			Discount: req.body.Discount,
-			Address: req.body.Address,
-			Delivery_date: req.body.Delivery_date,
-			Delivery_charges: req.body.Delivery_charges,
-			ClientName: req.body.ClientName,
-			Email: req.body.Email,
-			Phone: req.body.Phone,
-			Users_id: req.body.Users_id
-		}).then(submittedOrder => res.send(submittedOrder))
+	db.Orders.create({
+		// PaymentSuccess_id: req.body.PaymentSuccess,
+		Status: req.body.Status,
+		Discount: req.body.Discount,
+		Address: req.body.Address,
+		Delivery_date: req.body.Delivery_date,
+		Delivery_charges: req.body.Delivery_charges,
+		ClientName: req.body.ClientName,
+		Email: req.body.Email,
+		Phone: req.body.Phone,
+		Users_id: req.body.Users_id
+	}).then(submittedOrder => res.send(submittedOrder))
 })
 
 
