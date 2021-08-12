@@ -47,18 +47,18 @@ router.get("/all/:id", (req, res) => {
 
 // Insert Order
 router.post('/new', (req, res) => {
-	db.Orders.create({
-		// PaymentSuccess_id: req.body.PaymentSuccess,
-		Status: req.body.Status,
-		Discount: req.body.Discount,
-		Address: req.body.Address,
-		Delivery_date: req.body.Delivery_date,
-		Delivery_charges: req.body.Delivery_charges,
-		ClientName: req.body.ClientName,
-		Email: req.body.Email,
-		Phone: req.body.Phone,
-		Users_id: req.body.Users_id
-	}).then(submittedOrder => res.send(submittedOrder))
+		db.Orders.create({
+			// PaymentSuccess_id: req.body.PaymentSuccess,
+			Status: req.body.Status,
+			Discount: req.body.Discount,
+			Address: req.body.Address,
+			Delivery_date: req.body.Delivery_date,
+			Delivery_charges: req.body.Delivery_charges,
+			ClientName: req.body.ClientName,
+			Email: req.body.Email,
+			Phone: req.body.Phone,
+			Users_id: req.body.Users_id
+		}).then(submittedOrder => res.send(submittedOrder))
 })
 
 
@@ -89,7 +89,8 @@ router.put("/status", (req, res) => {
 router.post('/payment', async (req, res) => {
 	
 	mercadopago.configure({
-		access_token: 'APP_USR-4704468221720930-081215-a2b21470f29dd59dcace026de1b7f806-175591458'
+		access_token: 'APP_USR-5883300347000345-072919-70ca0a0d649f0b999c8c5865da022fdd-798958320'
+		// APP_USR-4704468221720930-081215-a2b21470f29dd59dcace026de1b7f806-175591458
 	});
 	
 	let preference = {
