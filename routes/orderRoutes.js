@@ -47,6 +47,7 @@ router.get("/all/:id", (req, res) => {
 
 // Insert Order
 router.post('/new', (req, res) => {
+	console.log(req.body)
 	db.Orders.create({
 		// PaymentSuccess_id: req.body.PaymentSuccess,
 		Status: req.body.Status,
