@@ -90,8 +90,8 @@ router.put("/status", (req, res) => {
 router.post('/payment', async (req, res) => {
 	
 	mercadopago.configure({
-		access_token: 'APP_USR-5883300347000345-072919-70ca0a0d649f0b999c8c5865da022fdd-798958320'
-		// APP_USR-4704468221720930-081215-a2b21470f29dd59dcace026de1b7f806-175591458
+		access_token: 'APP_USR-4704468221720930-081215-a2b21470f29dd59dcace026de1b7f806-175591458'
+		// APP_USR-5883300347000345-072919-70ca0a0d649f0b999c8c5865da022fdd-798958320
 	});
 	
 	let preference = {
