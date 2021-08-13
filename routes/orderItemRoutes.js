@@ -20,7 +20,6 @@ router.get("/find/:id", (req, res) => {
 
 // Insert OrderItem
 router.post('/new', (req, res) => {
-    console.log(req.body.Price)
     db.OrderItem.create({
         Quantity: req.body.Quantity,
         Orders_id: req.body.Orders_id,
